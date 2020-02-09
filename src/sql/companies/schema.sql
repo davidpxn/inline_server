@@ -1,0 +1,9 @@
+CREATE TABLE companies (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(128) NOT NULL,
+  country VARCHAR(128) NOT NULL,
+  website VARCHAR(128),
+
+  created TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT current_timestamp,
+  updated TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT current_timestamp
+);
