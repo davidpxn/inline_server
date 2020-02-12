@@ -9,6 +9,7 @@ require('dotenv').config();
 const express = require('express');
 
 const api = require('./src/js/api');
+const auth = require('./src/js/auth/auth');
 
 const {
   PORT: port = 5000,
@@ -53,6 +54,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+app.use(auth);
 app.use(api);
 app.use(notFoundHandler);
 app.use(errorHandler);

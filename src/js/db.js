@@ -8,6 +8,11 @@ const { Client } = require('pg');
 
 /**
  * Execute an SQL query.
+ *
+ * @param {string} sqlQuery - SQL query to execute
+ * @param {array} [values=[]] - Values for parameterized query
+ *
+ * @returns {Promise} Promise representing the result of the SQL query
  */
 async function query(sqlQuery, values = []) {
   const connectionString = process.env.DATABASE_URL;

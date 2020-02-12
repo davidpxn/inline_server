@@ -44,7 +44,7 @@ async function main() {
     return;
   }
 
-  // insert data into tables
+  // Insert data into tables
   try {
     const insertCompany = await readFileAsync('./src/sql/companies/insert.sql');
     const insertUser = await readFileAsync('./src/sql/users/insert.sql');
