@@ -14,8 +14,8 @@ This repository hosts the code for the server side of project inline.
   * `POST` Login with email and password. Returns token:
   ```json
     {
-      "email": "user@user.is",
-      "password": "password"
+      "email": "admin@company.com",
+      "password": "admin"
     }
   ```
   
