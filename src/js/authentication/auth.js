@@ -8,7 +8,15 @@ const passport = require('passport');
 const { Strategy, ExtractJwt } = require('passport-jwt');
 const jwt = require('jsonwebtoken');
 
-const { findById, findByEmail, comparePasswords } = require('../users/dbUsers');
+const {
+  findById,
+  findByEmail,
+  comparePasswords,
+  createUser,
+} = require('../users/dbUsers');
+const { createCompany } = require('../companies/dbCompanies');
+const { validateUserCreate, validateUserLogin } = require('../users/validationUsers');
+const { validateCompany } = require('../companies/validationCompanies');
 const { catchErrors } = require('../utils');
 
 
@@ -68,8 +76,13 @@ function requireAuth(req, res, next) {
 async function loginRoute(req, res) {
   const { email, password } = req.body;
 
-  const user = await findByEmail(email);
+  const validation = validateUserLogin(email, password);
 
+  if (validation.length > 0 || validation.length > 0) {
+    return res.status(400).json({ errors: validation });
+  }
+
+  const user = await findByEmail(email);
   if (!user) {
     return res.status(401).json({ field: 'email', error: 'No user with this email' });
   }
@@ -81,7 +94,6 @@ async function loginRoute(req, res) {
     const tokenOptions = { expiresIn: tokenLifetime };
     const token = jwt.sign(payload, jwtOptions.secretOrKey, tokenOptions);
 
-    delete user.password;
     return res.json({
       token,
       expiresIn: tokenLifetime,
@@ -92,13 +104,39 @@ async function loginRoute(req, res) {
 }
 
 
+/**
+ * Route to sign up for a new company.
+ */
+async function signupRoute(req, res) {
+  const { user = {}, company = {} } = req.body;
+
+  const validationUser = await validateUserCreate(user);
+  const validationCompany = await validateCompany(company);
+
+  if (validationUser.length > 0 || validationCompany.length > 0) {
+    return res.status(400).json({
+      errors: {
+        user: validationUser,
+        company: validationCompany,
+      },
+    });
+  }
+
+  const resultCompany = await createCompany(company);
+  Object.assign(user, { company: resultCompany.id, role: 'admin' });
+  const resultUser = await createUser(user);
+
+  return res.status(201).json({ user: resultUser, company: resultCompany });
+}
+
+
 const app = express();
 app.use(express.json());
 passport.use(new Strategy(jwtOptions, strat));
 app.use(passport.initialize());
 
 app.post('/login', catchErrors(loginRoute));
-
+app.post('/signup', catchErrors(signupRoute));
 
 module.exports = app;
 module.exports.requireAuth = requireAuth;

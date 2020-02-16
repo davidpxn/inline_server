@@ -11,13 +11,8 @@ const express = require('express');
  */
 function root(req, res) {
   return res.json({
-    users: {
-      users: '/users/',
-      user: '/users/{id}',
-      register: '/users/register',
-      login: '/users/login',
-      me: '/users/me',
-    },
+    login: '/login',
+    signup: '/signup',
   });
 }
 

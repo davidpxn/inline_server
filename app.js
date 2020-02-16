@@ -9,7 +9,7 @@ require('dotenv').config();
 const express = require('express');
 
 const api = require('./src/js/api');
-const auth = require('./src/js/auth/auth');
+const auth = require('./src/js/authentication/auth');
 
 const {
   PORT: port = 5000,

@@ -4,12 +4,32 @@
 
 
 const bcrypt = require('bcrypt');
+const validator = require('validator');
+const xss = require('xss');
 
 const { query } = require('../db');
 
 const {
   BCRYPT_ROUNDS: bcryptRounds = 10,
 } = process.env;
+
+
+/**
+ * Sanitizes the user's data.
+ *
+ * @param {object} user - An user.
+ */
+function sanitizeUser(user) {
+  const {
+    name,
+    email,
+  } = user;
+
+  Object.assign(user, {
+    name: xss(validator.escape(validator.trim(name))),
+    email: xss(validator.normalizeEmail(validator.escape(validator.trim(email)))),
+  });
+}
 
 
 /**
@@ -23,7 +43,8 @@ async function findById(id) {
       id, name, email, company, role, created, updated
     FROM
       users
-    WHERE id = $1`;
+    WHERE
+      id = $1`;
 
   const result = await query(q, [id]);
 
@@ -43,10 +64,11 @@ async function findById(id) {
 async function findByEmail(email) {
   const q = `
     SELECT
-      id, name, email, company, role, created, updated
+      *
     FROM
       users
-    WHERE email = $1`;
+    WHERE
+      email = $1`;
 
   const result = await query(q, [email]);
 
@@ -70,8 +92,60 @@ async function comparePasswords(password, hash) {
 }
 
 
+/**
+ * @param {string} email - User's email.
+ *
+ * @returns {Promise} - Promise saying true if the email is available.
+ */
+async function emailAvailable(email) {
+  const q = `
+  SELECT
+    *
+  FROM
+    users
+  WHERE
+    email = $1`;
+
+  const result = await query(q, [email]);
+  return result.rowCount === 0;
+}
+
+
+/**
+ * @param {object} user - Object representing a new user
+ *
+ * @returns {Promise} Promise representing the newly created user
+ */
+async function createUser(user) {
+  sanitizeUser(user);
+
+  const {
+    name,
+    email,
+    password,
+    company,
+    role,
+  } = user;
+
+  const hashedPassword = await bcrypt.hash(password, bcryptRounds);
+
+  const q = `
+    INSERT INTO
+      users (name, email, password, company, role)
+    VALUES
+      ($1, $2, $3, $4, $5)
+    RETURNING
+      id, name, email, company, role, created, updated`;
+
+  const result = await query(q, [name, email, hashedPassword, company, role]);
+  return result.rows[0];
+}
+
+
 module.exports = {
   findById,
   findByEmail,
   comparePasswords,
+  emailAvailable,
+  createUser,
 };
