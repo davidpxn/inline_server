@@ -9,6 +9,7 @@ require('dotenv').config();
 const express = require('express');
 
 const api = require('./src/js/api');
+const socket = require('./src/js/socket');
 const auth = require('./src/js/authentication/auth');
 
 const {
@@ -59,7 +60,8 @@ app.use(api);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-app.listen(port, () => {
+const server = socket(app);
+server.listen(port, () => {
   if (host) {
     console.info(`Server running at http://${host}:${port}/`);
   }
