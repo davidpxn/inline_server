@@ -54,6 +54,10 @@ app.use((req, res, next) => {
   next();
 });
 
+// app.get('/test', function(req, res){
+//   res.sendFile(__dirname + '/index.html');
+// });
+
 app.use(express.json());
 app.use(auth);
 app.use(api);
