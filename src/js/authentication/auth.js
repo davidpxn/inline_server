@@ -18,6 +18,7 @@ const { createCompany } = require('../companies/dbCompanies');
 const { validateUserCreate, validateUserLogin } = require('../users/validationUsers');
 const { validateCompany } = require('../companies/validationCompanies');
 const { catchErrors } = require('../utils');
+const { initCompany } = require('../redis');
 
 
 const {
@@ -35,7 +36,7 @@ const jwtOptions = {
  * Strategy function for authentication. Get the logged in user.
  */
 async function strat(data, next) {
-  const user = await findById(data.id);
+  const user = await findById(data.userID);
   if (user) {
     next(null, user);
   } else {
@@ -90,7 +91,7 @@ async function loginRoute(req, res) {
   const passwordIsCorrect = await comparePasswords(password, user.password);
 
   if (passwordIsCorrect) {
-    const payload = { id: user.id };
+    const payload = { userID: user.id, companyID: user.company };
     const tokenOptions = { expiresIn: tokenLifetime };
     const token = jwt.sign(payload, jwtOptions.secretOrKey, tokenOptions);
 
@@ -123,6 +124,8 @@ async function signupRoute(req, res) {
   }
 
   const resultCompany = await createCompany(company);
+  await initCompany(resultCompany.id);
+
   Object.assign(user, { company: resultCompany.id, role: 'admin' });
   const resultUser = await createUser(user);
 

@@ -10,6 +10,7 @@ const fs = require('fs');
 const util = require('util');
 
 const { query } = require('./db');
+const { client: redisClient, initCompany, resetRedis } = require('./redis');
 
 const databaseURL = process.env.DATABASE_URL;
 const readFileAsync = util.promisify(fs.readFile);
@@ -23,6 +24,8 @@ async function main() {
     const drop = await readFileAsync('./src/sql/drop.sql');
 
     await query(drop.toString('utf8'));
+
+    await resetRedis();
 
     console.info('Tables deleted');
   } catch (e) {
@@ -48,6 +51,9 @@ async function main() {
   try {
     const insertCompany = await readFileAsync('./src/sql/companies/insert.sql');
     const insertUser = await readFileAsync('./src/sql/users/insert.sql');
+
+    await initCompany(1);
+    redisClient.quit();
 
     await query(insertCompany.toString('utf8'));
     await query(insertUser.toString('utf8'));

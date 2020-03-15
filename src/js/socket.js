@@ -4,6 +4,9 @@ const { Server } = require('http');
 const socketio = require('socket.io');
 const socketioJwt = require('socketio-jwt');
 
+const sms = require('./sms');
+const { incrementCounter } = require('./redis');
+
 
 const {
   JWT_SECRET: jwtSecret,
@@ -26,7 +29,16 @@ function initSocket(app) {
 
   io.on('connection', (socket) => {
     console.info(`Number of socket connections: ${io.engine.clientsCount}`);
-    console.info('hello! ', socket.decoded_token.id);
+    console.info('Welcome: ', socket.decoded_token.userID);
+
+    socket.on('test/number', async (data) => {
+      const number = await incrementCounter(socket.decoded_token.companyID);
+      const success = await sms(data.phone, number);
+
+      if (!success) {
+        await sms(data.phone, number);
+      }
+    });
   });
 
   return server;
