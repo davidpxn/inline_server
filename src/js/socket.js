@@ -5,7 +5,7 @@ const socketio = require('socket.io');
 const socketioJwt = require('socketio-jwt');
 
 const sms = require('./sms');
-const { incrementCounter } = require('./redis');
+const { incrementCounter } = require('./data/redis');
 
 
 const {

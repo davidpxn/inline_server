@@ -17,8 +17,8 @@ const {
 const { createCompany } = require('../companies/dbCompanies');
 const { validateUserCreate, validateUserLogin } = require('../users/validationUsers');
 const { validateCompany } = require('../companies/validationCompanies');
-const { catchErrors } = require('../utils');
-const { initCompany } = require('../redis');
+const { catchErrors } = require('../utils/utils');
+const { initCompany } = require('../data/redis');
 
 
 const {

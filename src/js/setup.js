@@ -9,8 +9,8 @@ require('dotenv').config();
 const fs = require('fs');
 const util = require('util');
 
-const { query } = require('./db');
-const { client: redisClient, initCompany, resetRedis } = require('./redis');
+const { query } = require('./data/db');
+const { client: redisClient, initCompany, resetRedis } = require('./data/redis');
 
 const databaseURL = process.env.DATABASE_URL;
 const readFileAsync = util.promisify(fs.readFile);
