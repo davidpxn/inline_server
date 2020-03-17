@@ -8,9 +8,9 @@ require('dotenv').config();
 
 const express = require('express');
 
-const api = require('./src/js/api');
-const socket = require('./src/js/socket');
-const auth = require('./src/js/authentication/auth');
+const api = require('./src/js/rest_service/api');
+const socket = require('./src/js/socket/socket');
+const auth = require('./src/js/rest_service/authentication/auth');
 
 const {
   PORT: port = 5000,

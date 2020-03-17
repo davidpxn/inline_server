@@ -6,7 +6,7 @@
 const validator = require('validator');
 const countries = require('i18n-iso-countries');
 
-const { isValidString } = require('../utils/validation');
+const { isValidString } = require('../../utils/validation');
 
 
 /**

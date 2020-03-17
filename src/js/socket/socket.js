@@ -4,8 +4,7 @@ const { Server } = require('http');
 const socketio = require('socket.io');
 const socketioJwt = require('socketio-jwt');
 
-const sms = require('./sms');
-const { incrementCounter } = require('./data/redis');
+const Numbers = require('./event_handlers/numbers');
 
 
 const {
@@ -14,7 +13,7 @@ const {
 
 
 /**
- * Wrap an express app in a server with socket.io.
+ * Wrap an express app in a server that supports socket.io.
  *
  * @param {object} app - express app
  */
@@ -31,14 +30,19 @@ function initSocket(app) {
     console.info(`Number of socket connections: ${io.engine.clientsCount}`);
     console.info('Welcome: ', socket.decoded_token.userID);
 
-    socket.on('test/number', async (data) => {
-      const number = await incrementCounter(socket.decoded_token.companyID);
-      const success = await sms(data.phone, number);
+    socket.join(socket.decoded_token.companyID);
 
-      if (!success) {
-        await sms(data.phone, number);
+    const eventModules = [
+      new Numbers(socket),
+    ];
+
+    // eslint-disable-next-line
+    for (const module of eventModules) {
+      // eslint-disable-next-line
+      for (const [name, handler] of Object.entries(module.handlers)) {
+        socket.on(name, handler);
       }
-    });
+    }
   });
 
   return server;

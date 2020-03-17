@@ -6,7 +6,7 @@
 const validator = require('validator');
 
 const { emailAvailable } = require('./dbUsers');
-const { isValidString } = require('../utils/validation');
+const { isValidString } = require('../../utils/validation');
 
 /**
  * @param {object} user - An user.

@@ -17,8 +17,8 @@ const {
 const { createCompany } = require('../companies/dbCompanies');
 const { validateUserCreate, validateUserLogin } = require('../users/validationUsers');
 const { validateCompany } = require('../companies/validationCompanies');
-const { catchErrors } = require('../utils/utils');
-const { initCompany } = require('../data/redis');
+const { catchErrorsMiddleware } = require('../../utils/utils');
+const { initCompany } = require('../../data/redis');
 
 
 const {
@@ -138,8 +138,8 @@ app.use(express.json());
 passport.use(new Strategy(jwtOptions, strat));
 app.use(passport.initialize());
 
-app.post('/login', catchErrors(loginRoute));
-app.post('/signup', catchErrors(signupRoute));
+app.post('/login', catchErrorsMiddleware(loginRoute));
+app.post('/signup', catchErrorsMiddleware(signupRoute));
 
 module.exports = app;
 module.exports.requireAuth = requireAuth;

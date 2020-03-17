@@ -5,7 +5,7 @@
 const validator = require('validator');
 const xss = require('xss');
 
-const { query } = require('../data/db');
+const { query } = require('../../data/db');
 
 
 /**
