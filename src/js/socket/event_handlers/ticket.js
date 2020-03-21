@@ -3,7 +3,7 @@ const status = require('http-status-codes');
 const sms = require('../sms');
 const {
   getTicket: rGetTicket,
-  callNext: rCallNext,
+  callTicket: rCallTicket,
 } = require('../../data/redis');
 
 
@@ -41,14 +41,14 @@ async function getTicket(data, callback) {
 
 async function callNext(data, callback) {
   try {
-    const result = await rCallNext(this.socket.decoded_token.companyID);
+    const result = await rCallTicket(this.socket.decoded_token.companyID);
 
     callback({
       statusCode: status.OK,
       result,
     });
 
-    if (result.next !== null) {
+    if (result.current !== null) {
       this.socket.to(this.socket.decoded_token.companyID).emit('/ticket/sNewCall', result);
     }
   } catch (err) {

@@ -45,23 +45,25 @@ async function getTicket(companyID) {
 }
 
 
-async function callNext(companyID) {
+async function callTicket(companyID) {
   let waiting = await incrAsync(companyID, 'waiting', -1);
 
   if (waiting < 0) {
     waiting = await incrAsync(companyID, 'waiting', -waiting);
 
     return {
-      next: null,
+      current: null,
       waiting,
+      next: null,
     };
   }
 
-  const next = await incrAsync(companyID, 'current', 1);
+  const current = await incrAsync(companyID, 'current', 1);
 
   return {
-    next,
+    current,
     waiting,
+    next: waiting === 0 ? null : current + 1,
   };
 }
 
@@ -71,5 +73,5 @@ module.exports = {
   resetRedis,
   initCompany,
   getTicket,
-  callNext,
+  callTicket,
 };
