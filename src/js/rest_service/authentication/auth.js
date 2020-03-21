@@ -14,11 +14,16 @@ const {
   comparePasswords,
   createUser,
 } = require('../users/dbUsers');
+
 const { createCompany } = require('../companies/dbCompanies');
+const { createBranch } = require('../branches/dbBranches');
+
 const { validateUserCreate, validateUserLogin } = require('../users/validationUsers');
 const { validateCompany } = require('../companies/validationCompanies');
+const { validateBranch } = require('../branches/validationBranches');
+
 const { catchErrorsMiddleware } = require('../../utils/utils');
-const { initCompany } = require('../../data/redis');
+const { initBranch } = require('../../data/redis');
 
 
 const {
@@ -91,7 +96,7 @@ async function loginRoute(req, res) {
   const passwordIsCorrect = await comparePasswords(password, user.password);
 
   if (passwordIsCorrect) {
-    const payload = { userID: user.id, companyID: user.company };
+    const payload = { userID: user.id, companyID: user.company, branchID: user.branch };
     const tokenOptions = { expiresIn: tokenLifetime };
     const token = jwt.sign(payload, jwtOptions.secretOrKey, tokenOptions);
 
@@ -109,27 +114,32 @@ async function loginRoute(req, res) {
  * Route to sign up for a new company.
  */
 async function signupRoute(req, res) {
-  const { user = {}, company = {} } = req.body;
+  const { user = {}, company = {}, branch = {} } = req.body;
 
   const validationUser = await validateUserCreate(user);
   const validationCompany = await validateCompany(company);
+  const validationBranch = await validateBranch(branch);
 
-  if (validationUser.length > 0 || validationCompany.length > 0) {
+  if (validationUser.length > 0 || validationCompany.length > 0 || validationBranch.length > 0) {
     return res.status(400).json({
       errors: {
         user: validationUser,
         company: validationCompany,
+        branch: validationBranch,
       },
     });
   }
 
   const resultCompany = await createCompany(company);
-  await initCompany(resultCompany.id);
 
-  Object.assign(user, { company: resultCompany.id, role: 'admin' });
+  Object.assign(branch, { company: resultCompany.id });
+  const resultBranch = await createBranch(branch);
+  await initBranch(resultBranch.id);
+
+  Object.assign(user, { company: resultCompany.id, branch: resultBranch.id, role: 'admin' });
   const resultUser = await createUser(user);
 
-  return res.status(201).json({ user: resultUser, company: resultCompany });
+  return res.status(201).json({ user: resultUser, company: resultCompany, branch: resultBranch });
 }
 
 

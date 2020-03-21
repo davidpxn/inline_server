@@ -25,8 +25,8 @@ async function resetRedis() {
 }
 
 
-async function initCompany(companyID) {
-  await setAsync(companyID, {
+async function initBranch(branchID) {
+  await setAsync(branchID, {
     counter: 0,
     current: 0,
     waiting: 0,
@@ -34,9 +34,9 @@ async function initCompany(companyID) {
 }
 
 
-async function getTicket(companyID) {
-  const waiting = await incrAsync(companyID, 'waiting', 1);
-  const number = await incrAsync(companyID, 'counter', 1);
+async function getTicket(branchID) {
+  const waiting = await incrAsync(branchID, 'waiting', 1);
+  const number = await incrAsync(branchID, 'counter', 1);
 
   return {
     number,
@@ -45,11 +45,11 @@ async function getTicket(companyID) {
 }
 
 
-async function callTicket(companyID) {
-  let waiting = await incrAsync(companyID, 'waiting', -1);
+async function callTicket(branchID) {
+  let waiting = await incrAsync(branchID, 'waiting', -1);
 
   if (waiting < 0) {
-    waiting = await incrAsync(companyID, 'waiting', -waiting);
+    waiting = await incrAsync(branchID, 'waiting', -waiting);
 
     return {
       current: null,
@@ -58,7 +58,7 @@ async function callTicket(companyID) {
     };
   }
 
-  const current = await incrAsync(companyID, 'current', 1);
+  const current = await incrAsync(branchID, 'current', 1);
 
   return {
     current,
@@ -71,7 +71,7 @@ async function callTicket(companyID) {
 module.exports = {
   client,
   resetRedis,
-  initCompany,
+  initBranch,
   getTicket,
   callTicket,
 };

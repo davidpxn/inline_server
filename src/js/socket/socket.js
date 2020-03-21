@@ -30,7 +30,7 @@ function initSocket(app) {
     console.info(`Number of socket connections: ${io.engine.clientsCount}`);
     console.info('Welcome: ', socket.decoded_token.userID);
 
-    socket.join(socket.decoded_token.companyID);
+    socket.join(socket.decoded_token.branchID);
 
     const eventModules = [
       new Ticket(socket),

@@ -10,7 +10,7 @@ const fs = require('fs');
 const util = require('util');
 
 const { query } = require('./data/db');
-const { client: redisClient, initCompany, resetRedis } = require('./data/redis');
+const { client: redisClient, initBranch, resetRedis } = require('./data/redis');
 
 const databaseURL = process.env.DATABASE_URL;
 const readFileAsync = util.promisify(fs.readFile);
@@ -36,9 +36,11 @@ async function main() {
   // Create tables from schemas
   try {
     const tableCompany = await readFileAsync('./src/sql/companies/schema.sql');
+    const tableBranch = await readFileAsync('./src/sql/branches/schema.sql');
     const tableUser = await readFileAsync('./src/sql/users/schema.sql');
 
     await query(tableCompany.toString('utf8'));
+    await query(tableBranch.toString('utf8'));
     await query(tableUser.toString('utf8'));
 
     console.info('Tables created');
@@ -50,12 +52,14 @@ async function main() {
   // Insert data into tables
   try {
     const insertCompany = await readFileAsync('./src/sql/companies/insert.sql');
+    const insertBranch = await readFileAsync('./src/sql/branches/insert.sql');
     const insertUser = await readFileAsync('./src/sql/users/insert.sql');
 
-    await initCompany(1);
+    await initBranch(1);
     redisClient.quit();
 
     await query(insertCompany.toString('utf8'));
+    await query(insertBranch.toString('utf8'));
     await query(insertUser.toString('utf8'));
 
     console.info('Data inserted');

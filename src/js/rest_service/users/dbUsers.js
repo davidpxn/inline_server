@@ -40,7 +40,7 @@ function sanitizeUser(user) {
 async function findById(id) {
   const q = `
     SELECT
-      id, name, email, company, role, created, updated
+      id, name, email, company, branch, role, created, updated
     FROM
       users
     WHERE
@@ -124,6 +124,7 @@ async function createUser(user) {
     email,
     password,
     company,
+    branch,
     role,
   } = user;
 
@@ -131,13 +132,13 @@ async function createUser(user) {
 
   const q = `
     INSERT INTO
-      users (name, email, password, company, role)
+      users (name, email, password, company, branch, role)
     VALUES
-      ($1, $2, $3, $4, $5)
+      ($1, $2, $3, $4, $5, $6)
     RETURNING
-      id, name, email, company, role, created, updated`;
+      id, name, email, company, branch, role, created, updated`;
 
-  const result = await query(q, [name, email, hashedPassword, company, role]);
+  const result = await query(q, [name, email, hashedPassword, company, branch, role]);
   return result.rows[0];
 }
 

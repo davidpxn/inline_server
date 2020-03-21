@@ -9,7 +9,7 @@ const {
 
 async function getTicket(data, callback) {
   try {
-    const result = await rGetTicket(this.socket.decoded_token.companyID);
+    const result = await rGetTicket(this.socket.decoded_token.branchID);
     const { number } = result;
 
     let success = await sms(data.phone, number);
@@ -27,7 +27,7 @@ async function getTicket(data, callback) {
       number,
     });
 
-    this.socket.to(this.socket.decoded_token.companyID).emit('/ticket/sNewTicket', result);
+    this.socket.to(this.socket.decoded_token.branchID).emit('/ticket/sNewTicket', result);
   } catch (err) {
     console.error(err);
 
@@ -41,7 +41,7 @@ async function getTicket(data, callback) {
 
 async function callNext(data, callback) {
   try {
-    const result = await rCallTicket(this.socket.decoded_token.companyID);
+    const result = await rCallTicket(this.socket.decoded_token.branchID);
 
     callback({
       statusCode: status.OK,
@@ -49,7 +49,7 @@ async function callNext(data, callback) {
     });
 
     if (result.current !== null) {
-      this.socket.to(this.socket.decoded_token.companyID).emit('/ticket/sNewCall', result);
+      this.socket.to(this.socket.decoded_token.branchID).emit('/ticket/sNewCall', result);
     }
   } catch (err) {
     console.error(err);
