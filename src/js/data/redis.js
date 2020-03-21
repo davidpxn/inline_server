@@ -11,8 +11,8 @@ const {
 const client = redis.createClient({ url: redisUrl });
 
 const getAsync = promisify(client.get).bind(client);
-const setAsync = promisify(client.set).bind(client);
-const incrAsync = promisify(client.incr).bind(client);
+const setAsync = promisify(client.hmset).bind(client);
+const incrAsync = promisify(client.hincrby).bind(client);
 const flushallAsync = promisify(client.flushall).bind(client);
 
 client.on('error', (error) => {
@@ -26,12 +26,14 @@ async function resetRedis() {
 
 
 async function initCompany(companyID) {
-  await setAsync(companyID, 0);
+  await setAsync(companyID, {
+    counter: 0,
+  });
 }
 
 
 async function incrementCounter(companyID) {
-  const number = await incrAsync(companyID);
+  const number = await incrAsync(companyID, 'counter', 1);
   return number;
 }
 
