@@ -28,13 +28,41 @@ async function resetRedis() {
 async function initCompany(companyID) {
   await setAsync(companyID, {
     counter: 0,
+    current: 0,
+    waiting: 0,
   });
 }
 
 
-async function incrementCounter(companyID) {
+async function getTicket(companyID) {
+  const waiting = await incrAsync(companyID, 'waiting', 1);
   const number = await incrAsync(companyID, 'counter', 1);
-  return number;
+
+  return {
+    number,
+    waiting,
+  };
+}
+
+
+async function callNext(companyID) {
+  let waiting = await incrAsync(companyID, 'waiting', -1);
+
+  if (waiting < 0) {
+    waiting = await incrAsync(companyID, 'waiting', -waiting);
+
+    return {
+      next: null,
+      waiting,
+    };
+  }
+
+  const next = await incrAsync(companyID, 'current', 1);
+
+  return {
+    next,
+    waiting,
+  };
 }
 
 
@@ -42,5 +70,6 @@ module.exports = {
   client,
   resetRedis,
   initCompany,
-  incrementCounter,
+  getTicket,
+  callNext,
 };

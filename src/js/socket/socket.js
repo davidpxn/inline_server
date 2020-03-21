@@ -4,7 +4,7 @@ const { Server } = require('http');
 const socketio = require('socket.io');
 const socketioJwt = require('socketio-jwt');
 
-const Numbers = require('./event_handlers/numbers');
+const Ticket = require('./event_handlers/ticket');
 
 
 const {
@@ -33,7 +33,7 @@ function initSocket(app) {
     socket.join(socket.decoded_token.companyID);
 
     const eventModules = [
-      new Numbers(socket),
+      new Ticket(socket),
     ];
 
     // eslint-disable-next-line
