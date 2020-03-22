@@ -5,6 +5,8 @@
 
 const express = require('express');
 
+const usersRouter = require('./users/routerUsers');
+
 
 /**
  * Route to show all the available API endpoints.
@@ -19,6 +21,6 @@ function root(req, res) {
 
 const router = express.Router();
 router.get('/', root);
-
+router.use('/users', usersRouter);
 
 module.exports = router;

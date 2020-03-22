@@ -50,6 +50,27 @@ async function createBranch(branch) {
 }
 
 
+/**
+ * @param {number} branch - ID of a branch.
+ * @param {number} company - ID of a company.
+ *
+ * @returns {Promise} - Promise saying true if the branch is a part of the company.
+ */
+async function branchOfCompany(branch, company) {
+  const q = `
+  SELECT
+    *
+  FROM
+    branches
+  WHERE
+    id = $1 AND company = $2`;
+
+  const result = await query(q, [branch, company]);
+  return result.rowCount !== 0;
+}
+
+
 module.exports = {
   createBranch,
+  branchOfCompany,
 };

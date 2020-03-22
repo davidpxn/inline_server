@@ -6,22 +6,64 @@
 const validator = require('validator');
 
 const { emailAvailable } = require('./dbUsers');
+const { branchOfCompany } = require('../branches/dbBranches');
 const { isValidString } = require('../../utils/validation');
 
+const roles = ['admin', 'manager', 'agent'];
+
+
 /**
- * @param {object} user - An user.
+ * @param {object} user - A new user to create.
+ * @param {object} creator - Optional. The user initiating the creation.
  *
  * @returns {Promise} Promise representing an array of errors in the user's info.
  */
-async function validateUserCreate(user) {
+async function validateUserCreate(user, creator) {
   const {
     name,
     email,
     password,
     passwordConfirm,
+    branch,
+    role,
   } = user;
 
   const errors = [];
+
+  if (creator) {
+    switch (creator.role) {
+      case 'admin':
+        if (!Number.isInteger(branch) || !(await branchOfCompany(branch, creator.company))) {
+          errors.push({
+            field: 'branch',
+            message: 'Invalid branch',
+          });
+        }
+        if (!roles.includes(role)) {
+          errors.push({
+            field: 'role',
+            message: 'Role must be admin, manager or agent',
+          });
+        }
+        break;
+      case 'manager':
+        if (branch !== creator.branch) {
+          errors.push({
+            field: 'branch',
+            message: 'Managers are only allowed to create users for their branch',
+          });
+        }
+        if (!roles.slice(1, 3).includes(role)) {
+          errors.push({
+            field: 'role',
+            message: 'Role must be manager or agent',
+          });
+        }
+        break;
+      default:
+        break;
+    }
+  }
 
   if (isValidString(email, { min: 1 })) {
     const isEmailAvailable = await emailAvailable(email);

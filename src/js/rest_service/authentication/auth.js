@@ -64,7 +64,7 @@ function requireAuth(req, res, next) {
 
       if (!user) {
         const error = info.name === 'TokenExpiredError'
-          ? 'expired token' : 'invalid token';
+          ? 'Expired token' : 'Invalid token';
 
         return res.status(401).json({ error });
       }
@@ -73,6 +73,18 @@ function requireAuth(req, res, next) {
       return next();
     },
   )(req, res, next);
+}
+
+
+/**
+ * Middelware function to block access if user is not at least a manager.
+ */
+function requireMinManager(req, res, next) {
+  if (req.user.role === 'agent') {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  return next();
 }
 
 
@@ -153,3 +165,4 @@ app.post('/signup', catchErrorsMiddleware(signupRoute));
 
 module.exports = app;
 module.exports.requireAuth = requireAuth;
+module.exports.requireMinManager = [requireAuth, requireMinManager];

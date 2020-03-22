@@ -33,6 +33,54 @@ function sanitizeUser(user) {
 
 
 /**
+ * @param {number} companyID - ID of a company.
+ *
+ * @returns {Promise} Promise representing all users from the company.
+ */
+async function findByCompany(companyID) {
+  const q = `
+    SELECT
+      id, name, email, company, branch, role, created, updated
+    FROM
+      users
+    WHERE
+      company = $1`;
+
+  const result = await query(q, [companyID]);
+
+  if (result.rowCount === 0) {
+    return null;
+  }
+
+  return result.rows;
+}
+
+
+/**
+ * @param {number} branchID - ID of a branch.
+ *
+ * @returns {Promise} Promise representing all users from the branch.
+ */
+async function findByBranch(branchID) {
+  const q = `
+    SELECT
+      id, name, email, company, branch, role, created, updated
+    FROM
+      users
+    WHERE
+      branch = $1`;
+
+  const result = await query(q, [branchID]);
+
+  if (result.rowCount === 0) {
+    return null;
+  }
+
+  return result.rows;
+}
+
+
+/**
  * @param {number} id - User's id.
  *
  * @returns {Promise} Promise representing the requested user.
@@ -144,6 +192,8 @@ async function createUser(user) {
 
 
 module.exports = {
+  findByCompany,
+  findByBranch,
   findById,
   findByEmail,
   comparePasswords,
