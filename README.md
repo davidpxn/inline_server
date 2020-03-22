@@ -23,17 +23,20 @@ This repository hosts the code for the server side of project inline.
 `
   * `POST` Signup a new company and admin user:
   ```json
-    {
-      "user": {
-        "name": "User",
-        "email": "user@user.is",
-        "password": "password",
-        "passwordConfirm": "password"
-      },
-      "company": {
-        "name": "Company",
-        "country": "Iceland",
-        "website": "company.com"
-      }
+  {
+    "user": {
+      "name": "User",
+      "email": "user@user.is",
+      "password": "password",
+      "passwordConfirm": "password"
+    },
+    "company": {
+      "name": "Company",
+      "country": "Iceland",
+      "website": "company.com"
+    },
+    "branch": {
+    	"name": "Home"
     }
+  }
   ```
