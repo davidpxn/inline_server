@@ -2,15 +2,24 @@
 
 This repository hosts the code for the server side of project inline.
 
+
 ## Contributors
 
-  * Davíð Phuong Xuan Nguyen, davidpxn
+| Name        | Email           | Github  |
+| ------------- |:-------------:| -----:|
+| Davíð Phuong Xuan Nguyen     | davidpxn97@gmail.com | davidpxn |
+
 
 ## API
+
+### API 
+
+* `/`
+  * `GET` Returns all available API endpoints.
+  
 ### Authentication
 
 * `/login`
-
   * `POST` Login with email and password. Returns token:
   ```json
     {
@@ -19,8 +28,7 @@ This repository hosts the code for the server side of project inline.
     }
   ```
   
-* `/signup
-`
+* `/signup`
   * `POST` Signup a new company and admin user:
   ```json
   {
@@ -38,5 +46,23 @@ This repository hosts the code for the server side of project inline.
     "branch": {
     	"name": "Home"
     }
+  }
+  ```
+
+### Users
+
+* `/users`
+  * `GET` Returns all relevant users.
+  
+* `/users/create`
+  * `POST` Create a new user:
+  ```json
+  {
+    "name": "User",
+    "email": "user@user.is",
+    "password": "password",
+    "passwordConfirm": "password",
+    "branch": 1,
+    "role": "agent"
   }
   ```
