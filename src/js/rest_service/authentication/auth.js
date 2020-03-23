@@ -89,6 +89,18 @@ function requireMinManager(req, res, next) {
 
 
 /**
+ * Middelware function to block access if user is not admin.
+ */
+function requireAdmin(req, res, next) {
+  if (req.user.role === 'admin') {
+    return next();
+  }
+
+  return res.status(403).json({ error: 'Forbidden' });
+}
+
+
+/**
  * Route to log in an user.
  */
 async function loginRoute(req, res) {
@@ -166,3 +178,4 @@ app.post('/signup', catchErrorsMiddleware(signupRoute));
 module.exports = app;
 module.exports.requireAuth = requireAuth;
 module.exports.requireMinManager = [requireAuth, requireMinManager];
+module.exports.requireAdmin = [requireAuth, requireAdmin];

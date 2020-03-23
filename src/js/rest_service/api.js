@@ -6,6 +6,7 @@
 const express = require('express');
 
 const usersRouter = require('./users/routerUsers');
+const branchesRouter = require('./branches/routerBranches');
 
 
 /**
@@ -19,6 +20,10 @@ function root(req, res) {
       users: '/users',
       create: '/users/create',
     },
+    branches: {
+      branches: '/branches',
+      create: 'branches/create',
+    },
   });
 }
 
@@ -26,5 +31,6 @@ function root(req, res) {
 const router = express.Router();
 router.get('/', root);
 router.use('/users', usersRouter);
+router.use('/branches', branchesRouter);
 
 module.exports = router;

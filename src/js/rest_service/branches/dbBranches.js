@@ -25,6 +25,30 @@ function sanitizeBranch(branch) {
 
 
 /**
+ * @param {number} companyID - ID of a company.
+ *
+ * @returns {Promise} Promise representing all branches of the company.
+ */
+async function findByCompany(companyID) {
+  const q = `
+    SELECT
+      *
+    FROM
+      branches
+    WHERE
+      company = $1`;
+
+  const result = await query(q, [companyID]);
+
+  if (result.rowCount === 0) {
+    return null;
+  }
+
+  return result.rows;
+}
+
+
+/**
  * @param {object} branch - Object representing a new branch
  *
  * @returns {Promise} Promise representing the newly created branch
@@ -71,6 +95,7 @@ async function branchOfCompany(branch, company) {
 
 
 module.exports = {
+  findByCompany,
   createBranch,
   branchOfCompany,
 };

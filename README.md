@@ -66,3 +66,16 @@ This repository hosts the code for the server side of project inline.
     "role": "agent"
   }
   ```
+
+### Branches
+
+* `/branches`
+  * `GET` Returns all branches of company.
+  
+* `/branches/create`
+  * `POST` Create a new branch:
+  ```json
+  {
+    "name": "Branch"
+  }
+  ```
