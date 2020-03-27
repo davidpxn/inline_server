@@ -9,9 +9,7 @@ const xss = require('xss');
 
 const { query } = require('../../data/db');
 
-const {
-  BCRYPT_ROUNDS: bcryptRounds = 10,
-} = process.env;
+const bcryptRounds = parseInt(process.env.BCRYPT_ROUNDS, 10);
 
 
 /**
