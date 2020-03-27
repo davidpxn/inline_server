@@ -7,6 +7,7 @@ const express = require('express');
 const passport = require('passport');
 const { Strategy, ExtractJwt } = require('passport-jwt');
 const jwt = require('jsonwebtoken');
+const status = require('http-status-codes');
 
 const {
   findById,
@@ -66,7 +67,7 @@ function requireAuth(req, res, next) {
         const error = info.name === 'TokenExpiredError'
           ? 'Expired token' : 'Invalid token';
 
-        return res.status(401).json({ error });
+        return res.status(status.UNAUTHORIZED).json({ error });
       }
 
       req.user = user;
@@ -81,7 +82,7 @@ function requireAuth(req, res, next) {
  */
 function requireMinManager(req, res, next) {
   if (req.user.role === 'agent') {
-    return res.status(403).json({ error: 'Forbidden' });
+    return res.status(status.FORBIDDEN).json({ error: 'Forbidden' });
   }
 
   return next();
@@ -96,7 +97,7 @@ function requireAdmin(req, res, next) {
     return next();
   }
 
-  return res.status(403).json({ error: 'Forbidden' });
+  return res.status(status.FORBIDDEN).json({ error: 'Forbidden' });
 }
 
 
@@ -109,12 +110,12 @@ async function loginRoute(req, res) {
   const validation = validateUserLogin(email, password);
 
   if (validation.length > 0 || validation.length > 0) {
-    return res.status(400).json({ errors: validation });
+    return res.status(status.BAD_REQUEST).json({ errors: validation });
   }
 
   const user = await findByEmail(email);
   if (!user) {
-    return res.status(401).json({ field: 'email', error: 'No user with this email' });
+    return res.status(status.UNAUTHORIZED).json({ field: 'email', error: 'No user with this email' });
   }
 
   const passwordIsCorrect = await comparePasswords(password, user.password);
@@ -130,7 +131,7 @@ async function loginRoute(req, res) {
     });
   }
 
-  return res.status(401).json({ field: 'password', error: 'Wrong password' });
+  return res.status(status.UNAUTHORIZED).json({ field: 'password', error: 'Wrong password' });
 }
 
 
@@ -145,7 +146,7 @@ async function signupRoute(req, res) {
   const validationBranch = await validateBranch(branch);
 
   if (validationUser.length > 0 || validationCompany.length > 0 || validationBranch.length > 0) {
-    return res.status(400).json({
+    return res.status(status.BAD_REQUEST).json({
       errors: {
         user: validationUser,
         company: validationCompany,
@@ -163,7 +164,11 @@ async function signupRoute(req, res) {
   Object.assign(user, { company: resultCompany.id, branch: resultBranch.id, role: 'admin' });
   const resultUser = await createUser(user);
 
-  return res.status(201).json({ user: resultUser, company: resultCompany, branch: resultBranch });
+  return res.status(status.CREATED).json({
+    user: resultUser,
+    company: resultCompany,
+    branch: resultBranch,
+  });
 }
 
 

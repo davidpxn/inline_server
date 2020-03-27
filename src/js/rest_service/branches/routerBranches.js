@@ -4,6 +4,7 @@
 
 
 const express = require('express');
+const status = require('http-status-codes');
 
 const { requireAdmin } = require('../authentication/auth');
 const { catchErrorsMiddleware } = require('../../utils/utils');
@@ -29,11 +30,11 @@ async function createBranchRoute(req, res) {
   const validation = await validateBranch(branch);
 
   if (validation.length > 0) {
-    return res.status(400).json(validation);
+    return res.status(status.BAD_REQUEST).json(validation);
   }
 
   const result = await createBranch(branch);
-  return res.status(201).json(result);
+  return res.status(status.CREATED).json(result);
 }
 
 

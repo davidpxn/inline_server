@@ -4,6 +4,7 @@
 
 
 const express = require('express');
+const status = require('http-status-codes');
 
 const { requireMinManager } = require('../authentication/auth');
 const { catchErrorsMiddleware } = require('../../utils/utils');
@@ -30,11 +31,11 @@ async function createUserRoute(req, res) {
   const validation = await validateUserCreate(user, req.user);
 
   if (validation.length > 0) {
-    return res.status(400).json(validation);
+    return res.status(status.BAD_REQUEST).json(validation);
   }
 
   const result = await createUser(user);
-  return res.status(201).json(result);
+  return res.status(status.CREATED).json(result);
 }
 
 
