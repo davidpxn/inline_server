@@ -5,7 +5,7 @@ const { promisify } = require('util');
 
 
 const {
-  REDIS: redisUrl = 'redis://127.0.0.1:6379',
+  REDIS_URL: redisUrl = 'redis://127.0.0.1:6379',
 } = process.env;
 
 const client = redis.createClient({ url: redisUrl });

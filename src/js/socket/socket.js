@@ -3,12 +3,14 @@ require('dotenv').config();
 const { Server } = require('http');
 const socketio = require('socket.io');
 const socketioJwt = require('socketio-jwt');
+const redisAdapter = require('socket.io-redis');
 
 const Ticket = require('./event_handlers/ticket');
 
 
 const {
   JWT_SECRET: jwtSecret,
+  HEROKU_REDIS_CYAN_URL: redisUrl = 'redis://127.0.0.1:6379',
 } = process.env;
 
 
@@ -20,6 +22,7 @@ const {
 function initSocket(app) {
   const server = Server(app);
   const io = socketio(server);
+  io.adapter(redisAdapter(redisUrl));
 
   io.use(socketioJwt.authorize({
     secret: jwtSecret,
