@@ -56,6 +56,7 @@ async function main() {
     const insertUser = await readFileAsync('./src/sql/users/insert.sql');
 
     await initBranch(1);
+    await initBranch(2);
     redisClient.quit();
 
     await query(insertCompany.toString('utf8'));

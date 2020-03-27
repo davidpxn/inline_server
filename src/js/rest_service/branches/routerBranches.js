@@ -52,6 +52,6 @@ async function branchesRoute(req, res) {
 
 
 router.get('/', requireAdmin, catchErrorsMiddleware(branchesRoute));
-router.post('/create', requireAdmin, catchErrorsMiddleware(createBranchRoute));
+router.post('/', requireAdmin, catchErrorsMiddleware(createBranchRoute));
 
 module.exports = router;

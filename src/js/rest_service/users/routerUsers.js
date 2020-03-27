@@ -66,6 +66,6 @@ async function usersRoute(req, res) {
 
 
 router.get('/', requireMinManager, catchErrorsMiddleware(usersRoute));
-router.post('/create', requireMinManager, catchErrorsMiddleware(createUserRoute));
+router.post('/', requireMinManager, catchErrorsMiddleware(createUserRoute));
 
 module.exports = router;
