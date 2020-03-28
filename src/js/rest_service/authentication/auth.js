@@ -4,8 +4,9 @@
 
 
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const passport = require('passport');
-const { Strategy, ExtractJwt } = require('passport-jwt');
+const { Strategy } = require('passport-jwt');
 const jwt = require('jsonwebtoken');
 const status = require('http-status-codes');
 
@@ -33,7 +34,7 @@ const {
 } = process.env;
 
 const jwtOptions = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  jwtFromRequest: (req) => req.cookies.jwt,
   secretOrKey: jwtSecret,
 };
 
@@ -101,6 +102,13 @@ function requireAdmin(req, res, next) {
 }
 
 
+function setCookie(res, payload) {
+  const tokenOptions = { expiresIn: tokenLifetime };
+  const token = jwt.sign(payload, jwtOptions.secretOrKey, tokenOptions);
+  res.cookie('jwt', token, { httpOnly: true, secure: true });
+}
+
+
 /**
  * Route to log in an user.
  */
@@ -122,13 +130,8 @@ async function loginRoute(req, res) {
 
   if (passwordIsCorrect) {
     const payload = { userID: user.id, companyID: user.company, branchID: user.branch };
-    const tokenOptions = { expiresIn: tokenLifetime };
-    const token = jwt.sign(payload, jwtOptions.secretOrKey, tokenOptions);
-
-    return res.json({
-      token,
-      expiresIn: tokenLifetime,
-    });
+    setCookie(res, payload);
+    return res.send('Login successful');
   }
 
   return res.status(status.UNAUTHORIZED).json({ field: 'password', error: 'Wrong password' });
@@ -164,6 +167,13 @@ async function signupRoute(req, res) {
   Object.assign(user, { company: resultCompany.id, branch: resultBranch.id, role: 'admin' });
   const resultUser = await createUser(user);
 
+  const payload = {
+    userID: resultUser.id,
+    companyID: resultUser.company,
+    branchID: resultUser.branch,
+  };
+  setCookie(res, payload);
+
   return res.status(status.CREATED).json({
     user: resultUser,
     company: resultCompany,
@@ -174,6 +184,7 @@ async function signupRoute(req, res) {
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 passport.use(new Strategy(jwtOptions, strat));
 app.use(passport.initialize());
 
