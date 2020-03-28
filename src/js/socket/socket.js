@@ -41,8 +41,7 @@ function initSocket(app) {
   io.use((socket, next) => {
     const { jwtheader } = socket.handshake.headers;
     const jwtcookie = cookieParser.parse(socket.handshake.headers.cookie).jwt;
-    console.info({ jwtheader, jwtcookie });
-    console.info(socket.handshake.headers);
+
     if (nodeEnv === 'production') {
       verifyJWT(jwtcookie, socket, next);
     }
