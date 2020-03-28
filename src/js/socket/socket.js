@@ -2,8 +2,9 @@ require('dotenv').config();
 
 const { Server } = require('http');
 const socketio = require('socket.io');
-const socketioJwt = require('socketio-jwt');
+const jwt = require('jsonwebtoken');
 const redisAdapter = require('socket.io-redis');
+const cookieParser = require('cookie');
 
 const Ticket = require('./event_handlers/ticket');
 
@@ -11,7 +12,19 @@ const Ticket = require('./event_handlers/ticket');
 const {
   JWT_SECRET: jwtSecret,
   HEROKU_REDIS_CYAN_URL: redisUrl = 'redis://127.0.0.1:6379',
+  NODE_ENV: nodeEnv = 'development',
 } = process.env;
+
+
+function verifyJWT(token, socket, next) {
+  try {
+    const decoded = jwt.verify(token, jwtSecret);
+    socket.token = decoded; // eslint-disable-line
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
 
 
 /**
@@ -24,16 +37,26 @@ function initSocket(app) {
   const io = socketio(server);
   io.adapter(redisAdapter(redisUrl));
 
-  io.use(socketioJwt.authorize({
-    secret: jwtSecret,
-    handshake: true,
-  }));
+
+  io.use((socket, next) => {
+    const { jwtheader } = socket.handshake.headers;
+    const jwtcookie = cookieParser.parse(socket.handshake.headers.cookie).jwt;
+
+    if (nodeEnv === 'production') {
+      verifyJWT(jwtcookie, socket, next);
+    }
+
+    if (nodeEnv === 'development') {
+      verifyJWT(jwtcookie || jwtheader, socket, next);
+    }
+  });
+
 
   io.on('connection', (socket) => {
     console.info(`Number of socket connections: ${io.engine.clientsCount}`);
-    console.info('Welcome: ', socket.decoded_token.userID);
+    console.info('Welcome: ', socket.token.userID);
 
-    socket.join(socket.decoded_token.branchID);
+    socket.join(socket.token.branchID);
 
     const eventModules = [
       new Ticket(socket),
