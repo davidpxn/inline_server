@@ -56,7 +56,6 @@ Authentication with a bearer token is required for all request except to `/`, `/
 * `/users`
   * `GET` Returns all relevant users.
   
-* `/users/create`
   * `POST` Create a new user:
   ```json
   {
@@ -74,7 +73,6 @@ Authentication with a bearer token is required for all request except to `/`, `/
 * `/branches`
   * `GET` Returns all branches of company.
   
-* `/branches/create`
   * `POST` Create a new branch:
   ```json
   {
