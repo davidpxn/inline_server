@@ -109,6 +109,12 @@ function setCookie(res, payload) {
 }
 
 
+function logoutRoute(req, res) {
+  res.clearCookie('jwt', { httpOnly: true, secure: true });
+  return res.send('Logout successful');
+}
+
+
 /**
  * Route to log in an user.
  */
@@ -190,6 +196,7 @@ app.use(passport.initialize());
 
 app.post('/login', catchErrorsMiddleware(loginRoute));
 app.post('/signup', catchErrorsMiddleware(signupRoute));
+app.get('/logout', requireAuth, catchErrorsMiddleware(logoutRoute));
 
 module.exports = app;
 module.exports.requireAuth = requireAuth;
