@@ -8,6 +8,7 @@ require('dotenv').config();
 
 const express = require('express');
 const status = require('http-status-codes');
+const cors = require('cors');
 
 const api = require('./src/js/rest_service/api');
 const socket = require('./src/js/socket/socket');
@@ -45,15 +46,12 @@ function errorHandler(err, req, res, next) { // eslint-disable-line
 const app = express();
 
 // Allow cross-origin requests
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization',
-  );
-  next();
-});
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://localhost:3000'],
+  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+  credentials: true,
+}));
 
 // app.get('/test', function(req, res){
 //   res.sendFile(__dirname + '/index.html');

@@ -129,7 +129,7 @@ async function loginRoute(req, res) {
 
   const user = await findByEmail(email);
   if (!user) {
-    return res.status(status.UNAUTHORIZED).json({ field: 'email', error: 'No user with this email' });
+    return res.status(status.UNAUTHORIZED).json({ errors: [{ field: 'email', error: 'No user with this email' }] });
   }
 
   const passwordIsCorrect = await comparePasswords(password, user.password);
