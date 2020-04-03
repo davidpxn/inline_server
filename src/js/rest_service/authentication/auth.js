@@ -31,12 +31,22 @@ const { initBranch } = require('../../data/redis');
 const {
   JWT_SECRET: jwtSecret,
   TOKEN_LIFETIME: tokenLifetime = '24h',
+  NODE_ENV: nodeEnv,
 } = process.env;
 
 const jwtOptions = {
   jwtFromRequest: (req) => req.cookies.jwt,
   secretOrKey: jwtSecret,
 };
+
+const cookieOptions = {
+  httpOnly: true,
+};
+
+if (nodeEnv === 'production') {
+  cookieOptions.secure = true;
+  cookieOptions.sameSite = 'None';
+}
 
 
 /**
@@ -105,12 +115,12 @@ function requireAdmin(req, res, next) {
 function setCookie(res, payload) {
   const tokenOptions = { expiresIn: tokenLifetime };
   const token = jwt.sign(payload, jwtOptions.secretOrKey, tokenOptions);
-  res.cookie('jwt', token, { httpOnly: true, secure: true, sameSite: 'None' });
+  res.cookie('jwt', token, cookieOptions);
 }
 
 
 function logoutRoute(req, res) {
-  res.clearCookie('jwt', { httpOnly: true, secure: true });
+  res.clearCookie('jwt', cookieOptions);
   return res.send('Logout successful');
 }
 

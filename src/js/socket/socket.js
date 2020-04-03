@@ -12,7 +12,7 @@ const Ticket = require('./event_handlers/ticket');
 const {
   JWT_SECRET: jwtSecret,
   HEROKU_REDIS_CYAN_URL: redisUrl = 'redis://127.0.0.1:6379',
-  NODE_ENV: nodeEnv = 'development',
+  NODE_ENV: nodeEnv,
 } = process.env;
 
 
