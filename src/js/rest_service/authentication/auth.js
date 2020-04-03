@@ -105,7 +105,7 @@ function requireAdmin(req, res, next) {
 function setCookie(res, payload) {
   const tokenOptions = { expiresIn: tokenLifetime };
   const token = jwt.sign(payload, jwtOptions.secretOrKey, tokenOptions);
-  res.cookie('jwt', token, { httpOnly: true, secure: true });
+  res.cookie('jwt', token, { httpOnly: true, secure: true, sameSite: 'None' });
 }
 
 
