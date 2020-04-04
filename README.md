@@ -22,7 +22,7 @@ Authentication with a bearer token is required for all request except to `/`, `/
 ### Authentication
 
 * `/login`
-  * `POST` Login with email and password. Returns token:
+  * `POST` Login with email and password. Sets cookie:
   ```json
     {
       "email": "admin@company.com",
