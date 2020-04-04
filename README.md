@@ -30,6 +30,9 @@ Authentication with a bearer token is required for all request except to `/`, `/
     }
   ```
   
+* `/logout`
+  * `GET` Removes cookie from browser.
+  
 * `/signup`
   * `POST` Signup a new company and admin user:
   ```json
