@@ -36,13 +36,13 @@ async function validateUserCreate(user, creator) {
         if (!Number.isInteger(branch) || !(await branchOfCompany(branch, creator.company))) {
           errors.push({
             field: 'branch',
-            message: 'Invalid branch',
+            error: 'Invalid branch',
           });
         }
         if (!roles.includes(role)) {
           errors.push({
             field: 'role',
-            message: 'Role must be admin, manager or agent',
+            error: 'Role must be admin, manager or agent',
           });
         }
         break;
@@ -50,13 +50,13 @@ async function validateUserCreate(user, creator) {
         if (branch !== creator.branch) {
           errors.push({
             field: 'branch',
-            message: 'Managers are only allowed to create users for their branch',
+            error: 'Managers are only allowed to create users for their branch',
           });
         }
         if (!roles.slice(1, 3).includes(role)) {
           errors.push({
             field: 'role',
-            message: 'Role must be manager or agent',
+            error: 'Role must be manager or agent',
           });
         }
         break;
@@ -70,48 +70,48 @@ async function validateUserCreate(user, creator) {
     if (!isEmailAvailable) {
       errors.push({
         field: 'email',
-        message: 'Email is already in use',
+        error: 'Email is already in use',
       });
     }
 
     if (!validator.isEmail(email)) {
       errors.push({
         field: 'email',
-        message: 'Invalid email',
+        error: 'Invalid email',
       });
     }
   } else {
     errors.push({
       field: 'email',
-      message: 'Invalid email',
+      error: 'Invalid email',
     });
   }
 
   if (!isValidString(name, { min: 1 })) {
     errors.push({
       field: 'name',
-      message: 'Invalid name',
+      error: 'Invalid name',
     });
   }
 
   if (!isValidString(password, { min: 8, trim: false })) {
     errors.push({
       field: 'password',
-      message: 'Password must be at least 8 characters',
+      error: 'Password must be at least 8 characters',
     });
   }
 
   if (!isValidString(passwordConfirm, { min: 8, trim: false })) {
     errors.push({
       field: 'passwordConfirm',
-      message: 'Password must be at least 8 characters',
+      error: 'Password must be at least 8 characters',
     });
   }
 
   if (password !== passwordConfirm) {
     errors.push({
       field: 'passwordConfirm',
-      message: 'Passwords do not match',
+      error: 'Passwords do not match',
     });
   }
 
@@ -131,14 +131,14 @@ function validateUserLogin(email, password) {
   if (!isValidString(email, { min: 1 })) {
     errors.push({
       field: 'email',
-      message: 'Email is required',
+      error: 'Email is required',
     });
   }
 
   if (!isValidString(password, { min: 1, trim: false })) {
     errors.push({
       field: 'password',
-      message: 'Password is required',
+      error: 'Password is required',
     });
   }
 
