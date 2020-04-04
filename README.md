@@ -12,7 +12,7 @@ This repository hosts the code for the server side of project inline.
 
 ## API
 
-Authentication with a bearer token is required for all request except to `/`, `/login` and `/signup`.
+Authentication with a cookie is required for all request except to `/`, `/login` and `/signup`.
 
 ### API 
 
