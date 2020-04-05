@@ -150,7 +150,7 @@ async function loginRoute(req, res) {
     return res.send('Login successful');
   }
 
-  return res.status(status.UNAUTHORIZED).json({ field: 'password', error: 'Wrong password' });
+  return res.status(status.UNAUTHORIZED).json({ errors: [{ field: 'password', error: 'Wrong password' }] });
 }
 
 
