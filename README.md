@@ -12,7 +12,7 @@ This repository hosts the code for the server side of project inline.
 
 ## API
 
-Authentication with a bearer token is required for all request except to `/`, `/login` and `/signup`.
+Authentication with a cookie is required for all request except to `/`, `/login` and `/signup`.
 
 ### API 
 
@@ -22,7 +22,7 @@ Authentication with a bearer token is required for all request except to `/`, `/
 ### Authentication
 
 * `/login`
-  * `POST` Login with email and password. Returns token:
+  * `POST` Login with email and password. Sets cookie.
   ```json
     {
       "email": "admin@company.com",
@@ -30,8 +30,11 @@ Authentication with a bearer token is required for all request except to `/`, `/
     }
   ```
   
+* `/logout`
+  * `GET` Removes cookie from browser.
+  
 * `/signup`
-  * `POST` Signup a new company and admin user:
+  * `POST` Signup a new company and admin user. Sets cookie.
   ```json
   {
     "user": {
