@@ -48,10 +48,6 @@ const app = express();
 // Allow cross-origin requests
 app.use(cors({
   origin: [
-    'http://127.0.0.1:3000',
-    'https://127.0.0.1:3000',
-    'http://localhost:3000',
-    'https://localhost:3000',
     'https://web-inline.herokuapp.com',
   ],
   methods: ['GET', 'POST', 'PATCH', 'DELETE'],
