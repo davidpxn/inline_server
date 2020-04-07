@@ -21,7 +21,7 @@ async function validateBranch(branch) {
   if (!isValidString(name, { min: 1 })) {
     errors.push({
       field: 'name',
-      message: 'Invalid name',
+      error: 'Branch name must not be empty',
     });
   }
 

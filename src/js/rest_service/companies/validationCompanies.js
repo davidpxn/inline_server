@@ -26,21 +26,21 @@ async function validateCompany(company) {
   if (!isValidString(name, { min: 1 })) {
     errors.push({
       field: 'name',
-      message: 'Invalid name',
+      error: 'Invalid name',
     });
   }
 
   if (countries.getAlpha3Code(country, 'en') === undefined) {
     errors.push({
       field: 'country',
-      message: 'Invalid country',
+      error: 'Invalid country',
     });
   }
 
   if (website !== undefined && (!isValidString(website) || !validator.isURL(website))) {
     errors.push({
       field: 'website',
-      message: 'Invalid website URL',
+      error: 'Invalid website URL',
     });
   }
 
