@@ -103,6 +103,41 @@ async function findById(id) {
 
 
 /**
+ * @param {number} id - User's id.
+ *
+ * @returns {Promise} Promise representing the requested user with company and branch info.
+ */
+async function findByIdExtra(id) {
+  const q = `
+    SELECT
+      users.id AS "userID", 
+      users.name, 
+      users.email, 
+      users.company AS "companyID", 
+      companies.name AS "companyName",
+      users.branch AS "branchID", 
+      branches.name AS "branchName",
+      users.role, 
+      users.created, 
+      users.updated
+    FROM
+      users, companies, branches
+    WHERE
+      users.id = $1 AND
+      users.company = companies.id AND
+      users.branch = branches.id`;
+
+  const result = await query(q, [id]);
+
+  if (result.rowCount === 0) {
+    return null;
+  }
+
+  return result.rows[0];
+}
+
+
+/**
  * @param {string} email - User's email.
  *
  * @returns {Promise} Promise representing the requested user.
@@ -197,4 +232,5 @@ module.exports = {
   comparePasswords,
   emailAvailable,
   createUser,
+  findByIdExtra,
 };

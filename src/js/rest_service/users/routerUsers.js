@@ -6,12 +6,13 @@
 const express = require('express');
 const status = require('http-status-codes');
 
-const { requireMinManager } = require('../authentication/auth');
+const { requireMinManager, requireAuth } = require('../authentication/auth');
 const { catchErrorsMiddleware } = require('../../utils/utils');
 const {
   findByCompany,
   findByBranch,
   createUser,
+  findByIdExtra,
 } = require('./dbUsers');
 
 const {
@@ -40,6 +41,15 @@ async function createUserRoute(req, res) {
 
 
 /**
+ * Route to get self info.
+ */
+async function meRoute(req, res) {
+  const result = await findByIdExtra(req.user.id);
+  return res.json(result);
+}
+
+
+/**
  * Route to get all users.
  */
 async function usersRoute(req, res) {
@@ -49,24 +59,25 @@ async function usersRoute(req, res) {
     role,
   } = req.user;
 
-  let rows;
+  let users;
 
   switch (role) {
     case 'admin':
-      rows = await findByCompany(company);
+      users = await findByCompany(company);
       break;
     case 'manager':
-      rows = await findByBranch(branch);
+      users = await findByBranch(branch);
       break;
     default:
-      rows = [];
+      users = [];
   }
 
-  return res.json({ rows });
+  return res.json({ users });
 }
 
 
 router.get('/', requireMinManager, catchErrorsMiddleware(usersRoute));
 router.post('/', requireMinManager, catchErrorsMiddleware(createUserRoute));
+router.get('/me', requireAuth, catchErrorsMiddleware(meRoute));
 
 module.exports = router;
