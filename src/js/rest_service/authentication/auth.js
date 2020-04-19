@@ -198,6 +198,14 @@ async function signupRoute(req, res) {
 }
 
 
+/**
+ * Route to check if user is logged in with a valid cookie.
+ */
+async function verifyRoute(req, res) {
+  res.send('User is authenticated');
+}
+
+
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
@@ -207,6 +215,7 @@ app.use(passport.initialize());
 app.post('/login', catchErrorsMiddleware(loginRoute));
 app.post('/signup', catchErrorsMiddleware(signupRoute));
 app.get('/logout', requireAuth, catchErrorsMiddleware(logoutRoute));
+app.get('/verify', requireAuth, catchErrorsMiddleware(verifyRoute));
 
 module.exports = app;
 module.exports.requireAuth = requireAuth;
