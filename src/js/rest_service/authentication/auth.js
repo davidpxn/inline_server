@@ -119,7 +119,7 @@ function setCookie(res, payload) {
 }
 
 
-function logoutRoute(req, res) {
+async function logoutRoute(req, res) {
   res.clearCookie('jwt', cookieOptions);
   return res.send('Logout successful');
 }
