@@ -22,7 +22,7 @@ function verifyJWT(token, socket, next) {
     socket.token = decoded; // eslint-disable-line
     next();
   } catch (err) {
-    next(new Error('Unvalid JWT cookie'));
+    next(new Error('Invalid JWT cookie'));
   }
 }
 
