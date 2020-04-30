@@ -22,7 +22,7 @@ function verifyJWT(token, socket, next) {
     socket.token = decoded; // eslint-disable-line
     next();
   } catch (err) {
-    next(err);
+    next(new Error('Unvalid JWT cookie'));
   }
 }
 
@@ -69,6 +69,11 @@ function initSocket(app) {
         socket.on(name, handler);
       }
     }
+
+    socket.on('disconnect', () => {
+      console.info(`Number of socket connections: ${io.engine.clientsCount}`);
+      console.info('Bye: ', socket.token.userID);
+    });
   });
 
   return server;
