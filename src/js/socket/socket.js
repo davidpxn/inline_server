@@ -7,7 +7,7 @@ const redisAdapter = require('socket.io-redis');
 const cookieParser = require('cookie');
 
 const Ticket = require('./event_handlers/ticket');
-
+const { getBranchState } = require('../data/redis');
 
 const {
   JWT_SECRET: jwtSecret,
@@ -16,10 +16,13 @@ const {
 } = process.env;
 
 
-function verifyJWT(token, socket, next) {
+async function verifyJWT(token, socket, next) {
   try {
     const decoded = jwt.verify(token, jwtSecret);
     socket.token = decoded; // eslint-disable-line
+
+    const branchState = await getBranchState(decoded.branchID);
+    socket.emit('initial', branchState);
     next();
   } catch (err) {
     next(new Error('Invalid JWT cookie'));
@@ -38,16 +41,16 @@ function initSocket(app) {
   io.adapter(redisAdapter(redisUrl));
 
 
-  io.use((socket, next) => {
+  io.use(async (socket, next) => {
     const { jwtheader } = socket.handshake.headers;
     const jwtcookie = cookieParser.parse(socket.handshake.headers.cookie).jwt;
 
     if (nodeEnv === 'production') {
-      verifyJWT(jwtcookie, socket, next);
+      await verifyJWT(jwtcookie, socket, next);
     }
 
     if (nodeEnv === 'development') {
-      verifyJWT(jwtcookie || jwtheader, socket, next);
+      await verifyJWT(jwtcookie || jwtheader, socket, next);
     }
   });
 

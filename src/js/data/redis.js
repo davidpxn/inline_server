@@ -10,7 +10,7 @@ const {
 
 const client = redis.createClient({ url: redisUrl });
 
-const getAsync = promisify(client.get).bind(client);
+const getAsync = promisify(client.hgetall).bind(client);
 const setAsync = promisify(client.hmset).bind(client);
 const incrAsync = promisify(client.hincrby).bind(client);
 const flushallAsync = promisify(client.flushall).bind(client);
@@ -31,6 +31,12 @@ async function initBranch(branchID) {
     current: 0,
     waiting: 0,
   });
+}
+
+
+async function getBranchState(branchID) {
+  const state = await getAsync(branchID);
+  return state;
 }
 
 
@@ -74,4 +80,5 @@ module.exports = {
   initBranch,
   getTicket,
   callTicket,
+  getBranchState,
 };
