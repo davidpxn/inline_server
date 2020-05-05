@@ -30,12 +30,24 @@ async function initBranch(branchID) {
     counter: 0,
     current: 0,
     waiting: 0,
+    done: 0,
+    skipped: 0,
   });
 }
 
 
+function formatTicket(ticket) {
+  return `000${ticket}`.substr(-3);
+}
+
 async function getBranchState(branchID) {
   const state = await getAsync(branchID);
+  state.current = formatTicket(state.current);
+
+  if (state.waiting > 0) {
+    state.next = formatTicket(parseInt(state.current, 10) + 1);
+  }
+
   return state;
 }
 
@@ -44,32 +56,59 @@ async function getTicket(branchID) {
   const waiting = await incrAsync(branchID, 'waiting', 1);
   const number = await incrAsync(branchID, 'counter', 1);
 
-  return {
-    number,
+  const result = {
+    number: formatTicket(number),
     waiting,
+  };
+
+  if (waiting === 1) {
+    result.next = formatTicket(number);
+  }
+  return result;
+}
+
+
+async function callTicket(branchID, finishedTicket) {
+  const waiting = await incrAsync(branchID, 'waiting', -1);
+
+  const result = {
+    current: null,
+    waiting,
+    next: null,
+  };
+
+  if (finishedTicket) {
+    result.done = await incrAsync(branchID, 'done', 1);
+  }
+  if (waiting < 0) {
+    result.waiting = await incrAsync(branchID, 'waiting', -waiting);
+    return result;
+  }
+
+  const current = await incrAsync(branchID, 'current', 1);
+  result.current = formatTicket(current);
+  result.next = waiting === 0 ? null : formatTicket(current + 1);
+
+  return result;
+}
+
+
+async function finishTicket(branchID, finishedTicket) {
+  const done = await incrAsync(branchID, 'done', 1);
+
+  return {
+    done,
+    finishedTicket,
   };
 }
 
 
-async function callTicket(branchID) {
-  let waiting = await incrAsync(branchID, 'waiting', -1);
-
-  if (waiting < 0) {
-    waiting = await incrAsync(branchID, 'waiting', -waiting);
-
-    return {
-      current: null,
-      waiting,
-      next: null,
-    };
-  }
-
-  const current = await incrAsync(branchID, 'current', 1);
+async function skipTicket(branchID, skippedTicket) {
+  const skipped = await incrAsync(branchID, 'skipped', 1);
 
   return {
-    current,
-    waiting,
-    next: waiting === 0 ? null : current + 1,
+    skipped,
+    skippedTicket,
   };
 }
 
@@ -81,4 +120,6 @@ module.exports = {
   getTicket,
   callTicket,
   getBranchState,
+  finishTicket,
+  skipTicket,
 };
