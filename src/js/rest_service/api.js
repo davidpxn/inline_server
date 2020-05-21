@@ -13,18 +13,7 @@ const branchesRouter = require('./branches/routerBranches');
  * Route to show all the available API endpoints.
  */
 function root(req, res) {
-  return res.json({
-    login: '/login',
-    signup: '/signup',
-    users: {
-      users: '/users',
-      create: '/users/create',
-    },
-    branches: {
-      branches: '/branches',
-      create: 'branches/create',
-    },
-  });
+  return res.send('Welcome to the backend of inline');
 }
 
 
